@@ -11,6 +11,7 @@ export const generateToken = (res, user, message) => {
     }).json({
         success: true,
         user,
-        message
+        message,
+        token
     })
 }

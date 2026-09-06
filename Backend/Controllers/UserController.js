@@ -27,7 +27,7 @@ export const register = async (req, res) => {
         }
         await User.create(newUser);
 
-        generateToken(res, newUser, `Welcome ${newUser.name}`)
+        return generateToken(res, newUser, `Welcome ${newUser.name}`)
 
         // return res.status(200).json({ message: "User created successfully" });
 
@@ -59,13 +59,13 @@ export const login = async (req, res) => {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        generateToken(res, existingUser, `Welcome Back ${newUser.name}`)
+        return generateToken(res, existingUser, `Welcome Back ${existingUser.name}`)
 
         // return res.status(200).json({ message: "User successfully login" });
 
     } catch (error) {
         console.log("Error while creating user: ", error);
-        return res.status(500).json({ message: "Failed to create User" });
+        return res.status(500).json({ message: "Failed to login User" });
     }
 }
 

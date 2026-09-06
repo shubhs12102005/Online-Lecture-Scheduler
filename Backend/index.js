@@ -7,7 +7,7 @@ import { connectDB } from './DB/db.js';
 import UserRoute from './Routes/UserRoute.js'
 
 // Middlewares
-dotenv.config({})
+dotenv.config({});
 const app = express();
 app.use(express.json());
 app.use(cors())
