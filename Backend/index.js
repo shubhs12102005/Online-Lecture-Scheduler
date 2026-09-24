@@ -5,6 +5,7 @@ import cors from 'cors';
 // All Files Imports
 import { connectDB } from './DB/db.js';
 import UserRoute from './Routes/UserRoute.js'
+import CourseRoute from './Routes/CourseRoute.js'
 
 // Middlewares
 dotenv.config({});
@@ -16,6 +17,7 @@ const port = process.env.PORT || 5000;
 
 // Routes
 app.use('/api/user', UserRoute);
+app.use('/api/course', CourseRoute);
 
 app.listen(port, () => {
     console.log(`Backend is running on port ${port}`);

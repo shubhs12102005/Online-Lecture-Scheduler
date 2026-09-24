@@ -1,6 +1,7 @@
 import Course from '../Models/CourseModel.js';
 import { uploadMedia } from '../Utils/Cloudinary.js';
 
+// Controller for Create Course
 export const createCourse = async (req, res) => {
     try {
         // Destructuring from body
@@ -33,6 +34,7 @@ export const createCourse = async (req, res) => {
     }
 }
 
+// Controller for Get All Courses
 export const getAllCourses = async (req, res) => {
     try {
         const userId = req.id;
@@ -49,6 +51,7 @@ export const getAllCourses = async (req, res) => {
     }
 }
 
+// Controller for Get Course By Id
 export const getCourseById = async (req, res) => {
     try {
         const courseId = req.params.id;
@@ -65,6 +68,7 @@ export const getCourseById = async (req, res) => {
     }
 }
 
+// Controller for Update Course
 export const updateCourse = async (req, res) => {
     try {
         const courseId = req.params.id;
@@ -102,6 +106,7 @@ export const updateCourse = async (req, res) => {
     }
 }
 
+// Controller for Delete Course
 export const deleteCourse = async (req, res) => {
     try {
         const courseId = req.params.id;
