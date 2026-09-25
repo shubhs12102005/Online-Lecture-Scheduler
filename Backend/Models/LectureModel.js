@@ -19,6 +19,11 @@ const lectureSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    status: {
+        type: String,
+        enum: ['scheduled', 'completed', 'cancelled'],
+        default: 'scheduled',
+    },
     date: {
         type: Date,
         required: true,

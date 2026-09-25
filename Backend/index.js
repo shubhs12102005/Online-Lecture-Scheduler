@@ -6,6 +6,7 @@ import cors from 'cors';
 import { connectDB } from './DB/db.js';
 import UserRoute from './Routes/UserRoute.js'
 import CourseRoute from './Routes/CourseRoute.js'
+import LectureRoute from './Routes/LectureRoute.js'
 import cookieParser from 'cookie-parser';
 
 // Middlewares
@@ -20,6 +21,7 @@ const port = process.env.PORT || 5000;
 // Routes
 app.use('/api/user', UserRoute);
 app.use('/api/course', CourseRoute);
+app.use('/api/course/:id/lecture', LectureRoute);
 
 app.listen(port, () => {
     console.log(`Backend is running on port ${port}`);

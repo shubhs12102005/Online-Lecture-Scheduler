@@ -74,6 +74,7 @@ export const getCourseById = async (req, res) => {
 export const updateCourse = async (req, res) => {
     try {
         const courseId = req.params.id;
+        console.log("courseId: ", courseId);
 
         const { courseName, description, courseLevel } = req.body;
         const image = req.file;
