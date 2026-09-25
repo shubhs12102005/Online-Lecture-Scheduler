@@ -6,11 +6,13 @@ import cors from 'cors';
 import { connectDB } from './DB/db.js';
 import UserRoute from './Routes/UserRoute.js'
 import CourseRoute from './Routes/CourseRoute.js'
+import cookieParser from 'cookie-parser';
 
 // Middlewares
 dotenv.config({});
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors())
 
 const port = process.env.PORT || 5000;

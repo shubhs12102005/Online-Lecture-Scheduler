@@ -6,6 +6,11 @@ const lectureSchema = new mongoose.Schema({
         ref: 'Course',
         required: true,
     },
+    instructorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
     lecName: {
         type: String,
         required: true,
@@ -14,6 +19,10 @@ const lectureSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-}, {timestamps: true});
+    date: {
+        type: Date,
+        required: true,
+    },
+}, { timestamps: true });
 
 export const Lecture = mongoose.model('Lecture', lectureSchema); 

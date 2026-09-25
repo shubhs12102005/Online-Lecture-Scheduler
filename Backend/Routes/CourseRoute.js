@@ -1,11 +1,13 @@
 import express from 'express';
 import { createCourse, deleteCourse, getAllCourses, getCourseById, updateCourse } from '../Controllers/CourseController.js';
+import { isAuthenticated } from '../Middlewares/isAuthenticated.js';
+import upload from '../Middlewares/multer.js';
 const router = express.Router();
 
-router.post('/create', createCourse);
-router.get('/:id', getCourseById);
-router.get('/get', getAllCourses);
-router.put('/update/:id', updateCourse);
-router.delete('/delete/:id', deleteCourse);
+router.post('/create', isAuthenticated,  upload.single("image"), createCourse);
+router.get('/:id', isAuthenticated, getCourseById);
+router.get('/', isAuthenticated, getAllCourses);
+router.put('/update/:id', isAuthenticated, updateCourse);
+router.delete('/delete/:id', isAuthenticated, deleteCourse);
 
 export default router;

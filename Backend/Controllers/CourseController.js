@@ -1,4 +1,4 @@
-import Course from '../Models/CourseModel.js';
+import { Course } from '../Models/CourseModel.js';
 import { uploadMedia } from '../Utils/Cloudinary.js';
 
 // Controller for Create Course
@@ -6,6 +6,7 @@ export const createCourse = async (req, res) => {
     try {
         // Destructuring from body
         const { courseName, description, courseLevel } = req.body;
+        console.log("req.body: ", req.body);
         const image = req.file;
 
         // If any fields are empty
@@ -30,7 +31,7 @@ export const createCourse = async (req, res) => {
 
     } catch (error) {
         console.log("Error while creating user: ", error);
-        return res.status(500).json({ message: "Failed to create User" });
+        return res.status(500).json({ message: "Failed to create course" });
     }
 }
 
@@ -38,13 +39,14 @@ export const createCourse = async (req, res) => {
 export const getAllCourses = async (req, res) => {
     try {
         const userId = req.id;
+        console.log("userId: ", userId);
         const courses = await Course.find({ creator: userId }).sort({ createdAt: -1 });
 
         if (!courses || courses.length === 0) {
             return res.status(404).json({ message: "No courses found" });
         }
 
-        return res.status(200).json({ courses });
+        return res.status(200).json({ message: "Courses fetched successfully", courses });
     } catch (error) {
         console.log("Error while fetching courses: ", error);
         return res.status(500).json({ message: "Failed to fetch courses" });
@@ -61,7 +63,7 @@ export const getCourseById = async (req, res) => {
             return res.status(404).json({ message: "Course not found" });
         }
 
-        return res.status(200).json({ course });
+        return res.status(200).json({ message: "Course fetched successfully", course });
     } catch (error) {
         console.log("Error while fetching course: ", error);
         return res.status(500).json({ message: "Failed to fetch course" });
@@ -98,7 +100,7 @@ export const updateCourse = async (req, res) => {
 
         await Course.findByIdAndUpdate(courseId, updatedCourse);
 
-        return res.status(200).json({ message: "Course updated successfully" });
+        return res.status(200).json({ message: "Course updated successfully", updatedCourse });
 
     } catch (error) {
         console.log("Error while updating course: ", error);

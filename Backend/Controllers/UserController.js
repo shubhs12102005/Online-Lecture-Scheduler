@@ -27,7 +27,7 @@ export const register = async (req, res) => {
         }
         await User.create(newUser);
 
-        return generateToken(res, newUser, `Welcome ${newUser.name}`)
+        return generateToken(res, newUser, `Welcome ${newUser.name}`);
 
         // return res.status(200).json({ message: "User created successfully" });
 
@@ -103,7 +103,7 @@ export const getInstructors = async (req, res) => {
 // Controller for Get Instructor by ID
 export const getInstructorById = async (req, res) => {
     try {
-        const id  = req.params.UserId;
+        const id = req.params.UserId;
         const instructor = await User.findById(id);
         if (!instructor) {
             return res.status(404).json({ message: "Instructor not found" });
