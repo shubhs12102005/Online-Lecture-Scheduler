@@ -4,11 +4,11 @@ import Sidebar from '../Common/Sidebar'
 const Dashboard = () => {
     return (
         <div className='w-full flex p-4'>
-            <div className='w-1/4 border border-black'>
+            <div className=''>
                 <Sidebar />
             </div>
             <div>
-                jdbdbeirguyegruyerefruyefruy    
+                jdbdbeirguyebhjbubyby   
             </div>
         </div>
     )
