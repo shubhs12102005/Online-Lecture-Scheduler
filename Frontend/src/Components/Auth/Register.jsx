@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import axios from "axios";
 
 const Register = () => {
     // backend api
     const apiUrl = import.meta.env.VITE_BACKEND_API;
+    const navigate = useNavigate();
 
     // User state
     const [user, setUser] = useState({
@@ -56,8 +59,10 @@ const Register = () => {
             );
 
             if (res.status === 200) {
-                console.log("User ID:", res.data.user._id);
-                console.log("User:", res.data.user);
+                localStorage.setItem("token", res.data.token);
+                localStorage.setItem("user", res.data.user);
+
+                navigate('/');
             }
 
         } catch (error) {

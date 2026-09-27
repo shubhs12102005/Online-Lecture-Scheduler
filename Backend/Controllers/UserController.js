@@ -6,6 +6,7 @@ export const register = async (req, res) => {
     try {
         // Destructuring from body
         const { name, email, password, role } = req.body;
+        console.log("Registering user: ", name, email, password, role);
 
         // If any fields are empty
         if (!name || !email || !password || !role) {
@@ -15,7 +16,7 @@ export const register = async (req, res) => {
         // If user already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(401).json({ message: "User already exists" });
+            return res.status(400).json({ message: "User already exists" });
         }
 
         // Create new user
@@ -25,11 +26,9 @@ export const register = async (req, res) => {
             password,
             role
         }
-        await User.create(newUser);
+        const createdUser = await User.create(newUser);
 
-        return generateToken(res, newUser, `Welcome ${newUser.name}`);
-
-        // return res.status(200).json({ message: "User created successfully" });
+        return generateToken(res, createdUser, `Welcome ${newUser.name}`);
 
     } catch (error) {
         console.log("Error while creating user: ", error);
@@ -60,8 +59,6 @@ export const login = async (req, res) => {
         }
 
         return generateToken(res, existingUser, `Welcome Back ${existingUser.name}`)
-
-        // return res.status(200).json({ message: "User successfully login" });
 
     } catch (error) {
         console.log("Error while creating user: ", error);
