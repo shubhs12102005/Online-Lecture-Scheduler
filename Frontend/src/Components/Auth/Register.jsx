@@ -55,7 +55,8 @@ const Register = () => {
                 {
                     ...user,
                     role: "Instructor"
-                }
+                },
+                { withCredentials: true }
             );
 
             if (res.status === 200) {

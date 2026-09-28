@@ -50,7 +50,8 @@ const Login = () => {
         `${apiUrl}/user/login`,
         {
           ...user,
-        }
+        },
+        { withCredentials: true }
       );
 
       if (res.status === 200) {
