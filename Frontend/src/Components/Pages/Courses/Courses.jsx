@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { Link } from 'react-router-dom';
 
 const Courses = () => {
 
@@ -33,7 +34,7 @@ const Courses = () => {
                     Courses
                 </h1>
 
-                <button
+                <Link to='/add-course'
                     className="
                         bg-indigo-600
                         hover:bg-indigo-700
@@ -48,7 +49,7 @@ const Courses = () => {
                     "
                 >
                     + Add Course
-                </button>
+                </Link>
 
             </div>
 
@@ -114,10 +115,9 @@ const Courses = () => {
                                                 py-1
                                                 rounded-sm
 
-                                                ${
-                                                    course.courseLevel?.toLowerCase() === "advanced"
-                                                        ? "bg-red-50 text-red-500"
-                                                        : course.courseLevel?.toLowerCase() === "beginner"
+                                                ${course.courseLevel?.toLowerCase() === "advanced"
+                                                    ? "bg-red-50 text-red-500"
+                                                    : course.courseLevel?.toLowerCase() === "beginner"
                                                         ? "bg-indigo-50 text-indigo-500"
                                                         : "bg-yellow-50 text-yellow-600"
                                                 }

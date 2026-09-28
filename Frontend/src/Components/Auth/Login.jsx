@@ -18,6 +18,9 @@ const Login = () => {
   // Error state
   const [error, setError] = useState("")
 
+  // loading state
+  const [loading, setLoading] = useState(false);
+
   // Function to handle input change
   const handleChange = (e, input) => {
     setUser({
@@ -46,6 +49,8 @@ const Login = () => {
     if (!validate()) return;
 
     try {
+      setLoading(true);
+
       const res = await axios.post(
         `${apiUrl}/user/login`,
         {
@@ -65,6 +70,8 @@ const Login = () => {
       console.log("Registration error:", error);
       console.log("Backend error:", error.response?.data);
       setError("Error while creating user!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -259,11 +266,49 @@ const Login = () => {
 
 
             {/* Submit */}
+            {/* Submit Button */}
             <button
               type="submit"
-              className="w-full h-9 bg-[#5140d8] hover:bg-[#4434c5] text-white text-xs font-medium rounded-md transition duration-200"
+              disabled={loading}
+              className={`
+                                                h-8
+                                                px-4
+                                                min-w-[85px]
+                                                flex
+                                                items-center
+                                                justify-center
+                                                gap-2
+                                                bg-[#5140d8]
+                                                text-white
+                                                text-[9px]
+                                                font-medium
+                                                rounded-md
+                                                transition
+                                                ${loading
+                  ? "opacity-70 cursor-not-allowed"
+                  : "hover:bg-[#4434c5]"
+                }
+                                        `}
             >
-              Login
+              {loading ? (
+                <>
+                  <span
+                    className="
+                                                    w-3
+                                                    h-3
+                                                    border-2
+                                                    border-white/40
+                                                    border-t-white
+                                                    rounded-full
+                                                    animate-spin
+                                                "
+                  />
+
+                  Creating...
+                </>
+              ) : (
+                "Login"
+              )}
             </button>
 
             {
