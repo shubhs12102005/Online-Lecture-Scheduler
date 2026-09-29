@@ -16,7 +16,8 @@ const AppContent = () => {
       <Route element={<MainLayout />}>
         <Route path='/' element={<Dashboard />} />
         <Route path='/courses' element={<Courses />} />
-        <Route path='/add-course' element={<AddCourse />} />
+        <Route path='/courses/add-course' element={<AddCourse />} />
+        <Route path='/courses/edit-course/:id' element={<AddCourse />} />
       </Route>
     </Routes>
   )

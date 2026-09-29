@@ -1,10 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Courses = () => {
 
     const apiUrl = import.meta.env.VITE_BACKEND_API;
+    const navigate = useNavigate();
 
     const [courses, setCourses] = useState([]);
 
@@ -24,6 +25,19 @@ const Courses = () => {
         fetchCourses();
     }, []);
 
+    const handleEditCourse = (courseId) => {
+        console.log(`Edit course with ID: ${courseId}`);
+        navigate(`/courses/edit-course/${courseId}`);
+    }
+
+    const handleDeleteCourse = (courseId) => {
+        console.log(`Edit course with ID: ${courseId}`);
+    }
+
+    const handleManageCourseLectures = (courseId) => {
+        console.log(`Edit course with ID: ${courseId}`);
+    }
+
     return (
         <div className="min-h-screen bg-gray-50">
 
@@ -34,7 +48,8 @@ const Courses = () => {
                     Courses
                 </h1>
 
-                <Link to='/add-course'
+                {/* Add Course Button */}
+                <Link to='/courses/add-course'
                     className="
                         bg-indigo-600
                         hover:bg-indigo-700
@@ -164,7 +179,24 @@ const Courses = () => {
                                             duration-200
                                         "
                                     >
-                                        Manage Course
+                                        <select
+                                            onChange={(e) => {
+                                                if (e.target.value === "edit") {
+                                                    handleEditCourse(course._id);
+                                                }
+                                                if (e.target.value === "delete") {
+                                                    handleDeleteCourse(course._id);
+                                                }
+                                                if (e.target.value === "manage-lectures") {
+                                                    handleManageCourseLectures(course._id);
+                                                }
+                                            }}
+                                        >
+                                            <option>Manage Course</option>
+                                            <option value="edit">Edit</option>
+                                            <option value="delete">Delete</option>
+                                            <option value="manage-lectures">Manage Lectures</option>
+                                        </select>
                                     </button>
 
                                 </div>

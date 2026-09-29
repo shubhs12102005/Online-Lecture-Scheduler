@@ -1,12 +1,13 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { UploadCloud, ChevronDown } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const AddCourse = () => {
 
     const apiUrl = import.meta.env.VITE_BACKEND_API;
     const navigate = useNavigate();
+    const params = useParams();
 
     // State to manage course data
     const [course, setCourse] = useState({
@@ -15,6 +16,12 @@ const AddCourse = () => {
         description: "",
         image: null,
     });
+
+    // courseId will come when editing a course
+    const courseId = params.id;
+
+    // While editing, we need to keep track of whether we are in edit mode or not
+    const isEditMode = courseId ? true : false;
 
     // Error state
     const [error, setError] = useState("");
@@ -30,7 +37,6 @@ const AddCourse = () => {
         }
         return true;
     };
-
 
     // Function to handle change
     const handleChange = (e, name) => {
@@ -56,15 +62,27 @@ const AddCourse = () => {
             if (!validate()) return;
             setLoading(true);
 
+            // Creating formData to send data to backend
             const formData = new FormData();
             formData.append("courseName", course.courseName);
             formData.append("courseLevel", course.courseLevel);
             formData.append("description", course.description);
             formData.append("image", course.image);
 
-            const res = await axios.post(`${apiUrl}/course/create`, formData, {
-                withCredentials: true,
-            });
+            let res;
+
+            // If we are in edit mode
+            if (isEditMode) {
+                res = await axios.put(`${apiUrl}/course/update/${courseId}`, formData, {
+                    withCredentials: true,
+                })
+            }
+            // If we are in add mode
+            else {
+                res = await axios.post(`${apiUrl}/course/create`, formData, {
+                    withCredentials: true,
+                });
+            }
 
             if (res.status === 200) {
                 navigate('/courses');
@@ -76,6 +94,30 @@ const AddCourse = () => {
             setLoading(false);
         }
     };
+
+    // useEffect to fetch course details if we are in edit mode
+    useEffect(() => {
+        const fetchCourseDetails = async () => {
+            if (courseId) {
+                const res = await axios.get(`${apiUrl}/course/${courseId}`, {
+                    withCredentials: true,
+                })
+
+                if (res.status === 200) {
+                    console.log(res.data.course);
+                    setCourse({
+                        courseName: res.data.course.courseName,
+                        courseLevel: res.data.course.courseLevel,
+                        description: res.data.course.description,
+                        image: null, // Image is not fetched; user needs to re-upload if they want to change it
+                    });
+                }
+
+            }
+        }
+
+        fetchCourseDetails();
+    }, [courseId])
 
     return (
         <div className="min-h-screen bg-[#f8f9fc]">
@@ -329,6 +371,7 @@ const AddCourse = () => {
                                 {/* Cancel Button */}
                                 <button
                                     type="button"
+                                    onClick={() => navigate('/courses')}
                                     className="
                                         h-8
                                         px-4
@@ -387,7 +430,7 @@ const AddCourse = () => {
                                             Creating...
                                         </>
                                     ) : (
-                                        "Add Course"
+                                        isEditMode ? "Update Course" : "Create Course"
                                     )}
                                 </button>
                             </div>
