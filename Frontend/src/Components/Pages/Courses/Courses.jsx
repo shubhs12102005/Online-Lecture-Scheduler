@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from 'react-router-dom';
+import DeleteCourse from "./DeleteCourse";
 
 const Courses = () => {
 
@@ -8,6 +9,9 @@ const Courses = () => {
     const navigate = useNavigate();
 
     const [courses, setCourses] = useState([]);
+
+    const [isDelete, setIsDelete] = useState(false)
+    const [courseId, setCourseId] = useState("");
 
     const fetchCourses = async () => {
         try {
@@ -23,7 +27,7 @@ const Courses = () => {
 
     useEffect(() => {
         fetchCourses();
-    }, []);
+    }, [isDelete]);
 
     const handleEditCourse = (courseId) => {
         console.log(`Edit course with ID: ${courseId}`);
@@ -32,6 +36,8 @@ const Courses = () => {
 
     const handleDeleteCourse = (courseId) => {
         console.log(`Edit course with ID: ${courseId}`);
+        setCourseId(courseId)
+        setIsDelete(true);
     }
 
     const handleManageCourseLectures = (courseId) => {
@@ -65,7 +71,6 @@ const Courses = () => {
                 >
                     + Add Course
                 </Link>
-
             </div>
 
 
@@ -206,10 +211,13 @@ const Courses = () => {
                         ))}
 
                     </div>
-
                 )}
 
             </div>
+
+            {
+                isDelete && <DeleteCourse courseId={courseId} onClose={() => setIsDelete(false)} />
+            }
 
         </div>
     );
