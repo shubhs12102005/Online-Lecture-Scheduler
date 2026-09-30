@@ -9,10 +9,10 @@ const Courses = () => {
     const navigate = useNavigate();
 
     const [courses, setCourses] = useState([]);
-
     const [isDelete, setIsDelete] = useState(false)
     const [courseId, setCourseId] = useState("");
 
+    // Function to fetch admins courses
     const fetchCourses = async () => {
         try {
             const res = await axios.get(`${apiUrl}/course`, {
@@ -25,23 +25,25 @@ const Courses = () => {
         }
     };
 
+    // useEffect to fetch courses
     useEffect(() => {
         fetchCourses();
     }, [isDelete]);
 
+    // Function to handle edit particular course
     const handleEditCourse = (courseId) => {
-        console.log(`Edit course with ID: ${courseId}`);
         navigate(`/courses/edit-course/${courseId}`);
     }
 
+    // Function to handle delete particular course
     const handleDeleteCourse = (courseId) => {
-        console.log(`Edit course with ID: ${courseId}`);
         setCourseId(courseId)
         setIsDelete(true);
     }
 
+    // Function to handle lectures of a particular course
     const handleManageCourseLectures = (courseId) => {
-        console.log(`Edit course with ID: ${courseId}`);
+        navigate(`/courses/${courseId}/lectures`);
     }
 
     return (
@@ -166,43 +168,58 @@ const Courses = () => {
 
 
                                     {/* Button */}
-                                    <button
-                                        className="
-                                            mt-3
-                                            w-full
-                                            border
-                                            border-gray-200
-                                            bg-white
-                                            hover:bg-indigo-50
-                                            hover:border-indigo-200
-                                            text-indigo-600
-                                            text-[10px]
-                                            font-medium
-                                            py-2
-                                            rounded-sm
-                                            transition
-                                            duration-200
-                                        "
-                                    >
+                                    <div className="mt-3 w-full">
                                         <select
+                                            defaultValue=""
                                             onChange={(e) => {
                                                 if (e.target.value === "edit") {
                                                     handleEditCourse(course._id);
                                                 }
+
                                                 if (e.target.value === "delete") {
                                                     handleDeleteCourse(course._id);
                                                 }
+
                                                 if (e.target.value === "manage-lectures") {
                                                     handleManageCourseLectures(course._id);
                                                 }
+
+                                                // Reset back to "Manage Course"
+                                                e.target.value = "";
                                             }}
+                                            className="
+            w-full
+            appearance-none
+            cursor-pointer
+            rounded-sm
+            border
+            border-gray-200
+            bg-white
+            px-3
+            py-2
+            text-center
+            text-[10px]
+            font-medium
+            text-indigo-600
+            outline-none
+            transition
+            duration-200
+            hover:border-indigo-200
+            hover:bg-indigo-50
+            focus:border-indigo-300
+            focus:ring-2
+            focus:ring-indigo-100
+            dark:border-slate-600
+            dark:bg-slate-800
+            dark:text-indigo-400
+        "
                                         >
-                                            <option>Manage Course</option>
+                                            <option value="">Manage Course</option>
                                             <option value="edit">Edit</option>
                                             <option value="delete">Delete</option>
                                             <option value="manage-lectures">Manage Lectures</option>
                                         </select>
-                                    </button>
+                                    </div>
 
                                 </div>
 

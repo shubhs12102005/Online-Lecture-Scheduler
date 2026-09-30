@@ -6,6 +6,8 @@ import Dashboard from './Components/Pages/Dashboard'
 import MainLayout from './Components/Layout/MainLayout'
 import Courses from './Components/Pages/Courses/Courses'
 import AddCourse from './Components/Pages/Courses/AddCourse'
+import Lectures from './Components/Pages/Lectures/Lectures'
+import AddLecture from './Components/Pages/Lectures/AddLecture'
 
 const AppContent = () => {
   return (
@@ -18,6 +20,9 @@ const AppContent = () => {
         <Route path='/courses' element={<Courses />} />
         <Route path='/courses/add-course' element={<AddCourse />} />
         <Route path='/courses/edit-course/:id' element={<AddCourse />} />
+        <Route path='/courses/edit-course/:id' element={<AddCourse />} />
+        <Route path='/courses/:id/lectures' element={<Lectures />} />
+        <Route path='/courses/:id/lectures/add-lecture' element={<AddLecture />} />
       </Route>
     </Routes>
   )
