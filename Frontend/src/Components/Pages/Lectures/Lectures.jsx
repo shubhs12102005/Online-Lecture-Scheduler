@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { MoreVertical, Edit, Trash2, Eye } from "lucide-react";
+import DeleteLecture from "./DeleteLecture";
 
 const Lectures = () => {
     const apiUrl = import.meta.env.VITE_BACKEND_API;
@@ -11,9 +12,16 @@ const Lectures = () => {
     const courseId = params.id;
 
     const [lectures, setLectures] = useState([]);
+    const [isDelete, setIsDelete] = useState(false)
+    const [lectureId, setLectureId] = useState("")
 
     const handleEditLecture = (lecId) => {
         navigate(`/courses/${courseId}/lectures/edit-lecture/${lecId}`);
+    }
+
+    const handleDeleteLecture = (lecId) => {
+        setLectureId(lecId)
+        setIsDelete(true)
     }
 
     const fetchLectures = async () => {
@@ -35,7 +43,7 @@ const Lectures = () => {
 
     useEffect(() => {
         fetchLectures();
-    }, [courseId]);
+    }, [courseId, lectureId, isDelete]);
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -245,7 +253,7 @@ const Lectures = () => {
                                                         >
                                                             <Edit size={13} />
                                                             Edit
-                                                        </button>                                               
+                                                        </button>
 
                                                         {/* Delete */}
                                                         <button
@@ -292,6 +300,9 @@ const Lectures = () => {
                 </div>
 
             </div>
+            {
+                isDelete && <DeleteLecture courseId={courseId} lectureId={lectureId} onClose={() => setIsDelete(false)} />
+            }
         </div>
     );
 };

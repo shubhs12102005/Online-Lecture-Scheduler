@@ -165,7 +165,7 @@ export const updateLecture = async (req, res) => {
 // Controller to delete lecture
 export const deleteLecture = async (req, res) => {
     try {
-        const lectureId = req.params.lectureId;
+        const lectureId = req.params.lecId;
         if (!lectureId) {
             return res.status(400).json({ message: "Lecture ID is required" });
         }
