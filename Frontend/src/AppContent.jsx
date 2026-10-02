@@ -20,9 +20,10 @@ const AppContent = () => {
         <Route path='/courses' element={<Courses />} />
         <Route path='/courses/add-course' element={<AddCourse />} />
         <Route path='/courses/edit-course/:id' element={<AddCourse />} />
-        <Route path='/courses/edit-course/:id' element={<AddCourse />} />
+        
         <Route path='/courses/:id/lectures' element={<Lectures />} />
         <Route path='/courses/:id/lectures/add-lecture' element={<AddLecture />} />
+        <Route path='/courses/:id/lectures/edit-lecture/:lecId' element={<AddLecture />} />
       </Route>
     </Routes>
   )

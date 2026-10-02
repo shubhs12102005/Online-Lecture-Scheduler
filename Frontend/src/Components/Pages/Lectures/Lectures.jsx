@@ -1,15 +1,20 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { MoreVertical, Edit, Trash2, Eye } from "lucide-react";
 
 const Lectures = () => {
     const apiUrl = import.meta.env.VITE_BACKEND_API;
     const params = useParams();
+    const navigate = useNavigate();
 
     const courseId = params.id;
 
     const [lectures, setLectures] = useState([]);
+
+    const handleEditLecture = (lecId) => {
+        navigate(`/courses/${courseId}/lectures/edit-lecture/${lecId}`);
+    }
 
     const fetchLectures = async () => {
         try {
@@ -240,28 +245,7 @@ const Lectures = () => {
                                                         >
                                                             <Edit size={13} />
                                                             Edit
-                                                        </button>
-
-                                                        {/* View */}
-                                                        <button
-                                                            onClick={() => handleViewLecture(lecture._id)}
-                                                            className="
-                                                                flex
-                                                                w-full
-                                                                items-center
-                                                                gap-2
-                                                                px-3
-                                                                py-2
-                                                                text-left
-                                                                text-[11px]
-                                                                text-gray-600
-                                                                hover:bg-gray-50
-                                                                hover:text-gray-800
-                                                            "
-                                                        >
-                                                            <Eye size={13} />
-                                                            View
-                                                        </button>
+                                                        </button>                                               
 
                                                         {/* Delete */}
                                                         <button

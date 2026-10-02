@@ -1,15 +1,18 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { UploadCloud, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const AddLecture = () => {
-
     const apiUrl = import.meta.env.VITE_BACKEND_API;
-    const navigate = useNavigate();
-    const params = useParams();
 
-    // State to manage course data
+    const navigate = useNavigate();
+    const { id: courseId, lecId } = useParams();
+    console.log(courseId, lecId);
+
+    const isEditMode = (lecId) ? true : false;
+
+    // Lecture state
     const [lecture, setLecture] = useState({
         lecName: "",
         batchName: "",
@@ -17,108 +20,171 @@ const AddLecture = () => {
         instructorId: "",
     });
 
-    // courseId will come when editing a course
-    const courseId = params.id;
-    console.log(lecture)
-
-    // While editing, we need to keep track of whether we are in edit mode or not
-    const isEditMode = courseId ? true : false;
+    // Instructor state
+    const [instructor, setInstructor] = useState([]);
 
     // Error state
     const [error, setError] = useState("");
 
-    // loading state
+    // Loading state
     const [loading, setLoading] = useState(false);
 
-    // Validate Function
-    const validate = () => {
-        if (!course.courseName || !course.courseLevel || !course.description || !course.image) {
-            setError("Please fill all the fields!");
+    // Handle input changes
+    const handleChange = (e, name) => {
+        const updatedLecture = {
+            ...lecture,
+            [name]: e.target.value,
+        };
+        setLecture(updatedLecture);
+        console.log("Lecture form updated:", updatedLecture);
+    };
+
+    // Funtion to Validate all fields
+    const validation = () => {
+        if (!courseId) {
+            setError("Course ID is missing.");
+            console.log("Course ID is missing");
+            return false;
+        }
+
+        if (!lecture.lecName) {
+            setError("Please enter lecture name.");
+            return false;
+        }
+
+        if (!lecture.instructorId) {
+            setError("Please select an instructor.");
+            return false;
+        }
+
+        if (!lecture.batchName) {
+            setError("Please enter batch name.");
+            return false;
+        }
+
+        if (!lecture.date) {
+            setError("Please select lecture date.");
             return false;
         }
         return true;
-    };
+    }
 
-    // Function to handle change
-    const handleChange = (e, name) => {
-        setCourse({
-            ...course,
-            [name]: e.target.value,
-        });
-    };
-
-    // Function to handle image change
-    const handleImageChange = (e) => {
-        setCourse({
-            ...course,
-            image: e.target.files[0],
-        });
-    };
-
-    // Function to handle submit
+    // Create lecture
     const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!validation()) return;
+
         try {
-            e.preventDefault();
-
-            if (!validate()) return;
             setLoading(true);
-
-            // Creating formData to send data to backend
-            const formData = new FormData();
-            formData.append("courseName", course.courseName);
-            formData.append("courseLevel", course.courseLevel);
-            formData.append("description", course.description);
-            formData.append("image", course.image);
-
+            setError("");
             let res;
 
-            // If we are in edit mode
             if (isEditMode) {
-                res = await axios.put(`${apiUrl}/course/update/${courseId}`, formData, {
-                    withCredentials: true,
-                })
-            }
-            // If we are in add mode
-            else {
-                res = await axios.post(`${apiUrl}/course/create`, formData, {
-                    withCredentials: true,
-                });
+                res = await axios.put(
+                    `${apiUrl}/course/${courseId}/lecture/update/${lecId}`,
+                    lecture,
+                    {
+                        withCredentials: true,
+                    }
+                );
+            } else {
+                res = await axios.post(
+                    `${apiUrl}/course/${courseId}/lecture/create`,
+                    lecture,
+                    {
+                        withCredentials: true,
+                    }
+                );
             }
 
             if (res.status === 200) {
-                navigate('/courses');
+                navigate(`/courses/${courseId}/lectures`);
             }
 
         } catch (error) {
-            console.log("Error while adding course: ", error);
+            console.log(
+                "Error while creating lecture:",
+                error
+            );
+
+            setError(
+                error.response?.data?.message ||
+                "Failed to create lecture"
+            );
         } finally {
             setLoading(false);
         }
     };
 
-    // useEffect to fetch course details if we are in edit mode
-    useEffect(() => {
-        const fetchCourseDetails = async () => {
-            if (courseId) {
-                const res = await axios.get(`${apiUrl}/course/${courseId}`, {
+    const fetchLectureById = async () => {
+        try {
+            const res = await axios.get(
+                `${apiUrl}/course/${courseId}/lecture/${lecId}`,
+                {
                     withCredentials: true,
-                })
-
-                if (res.status === 200) {
-                    console.log(res.data.course);
-                    setCourse({
-                        courseName: res.data.course.courseName,
-                        courseLevel: res.data.course.courseLevel,
-                        description: res.data.course.description,
-                        image: null, // Image is not fetched; user needs to re-upload if they want to change it
-                    });
                 }
+            );
 
+            if (res.status === 200) {
+                const lectureData = res.data.lecture;
+
+                // Convert backend UTC date to datetime-local format
+                const date = new Date(lectureData.date);
+
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, "0");
+                const day = String(date.getDate()).padStart(2, "0");
+                const hours = String(date.getHours()).padStart(2, "0");
+                const minutes = String(date.getMinutes()).padStart(2, "0");
+
+                const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+                console.log("Original date:", lectureData.date);
+                console.log("Formatted date:", formattedDate);
+
+                setLecture({
+                    lecName: lectureData.lecName || "",
+                    instructorId: lectureData.instructorId || "",
+                    batchName: lectureData.batchName || "",
+                    date: formattedDate,
+                });
             }
+        } catch (error) {
+            console.log("Error fetching lecture:", error);
         }
+    };
 
-        fetchCourseDetails();
-    }, [courseId])
+    useEffect(() => {
+        if (lecId) {
+            fetchLectureById();
+        }
+    }, [])
+
+    // Fetch all instructors
+    const fetchInstructors = async () => {
+        try {
+            const res = await axios.get(
+                `${apiUrl}/user/instructors`,
+                {
+                    withCredentials: true,
+                }
+            );
+
+            // If backend sends instructors
+            setInstructor(res.data.instructors || []);
+
+        } catch (error) {
+            setError(
+                error.response?.data?.message ||
+                "Failed to fetch instructors"
+            );
+        }
+    };
+
+    // Fetch instructors when page loads
+    useEffect(() => {
+        fetchInstructors();
+    }, []);
 
     return (
         <div className="min-h-screen bg-[#f8f9fc]">
@@ -126,42 +192,44 @@ const AddLecture = () => {
             {/* Header */}
             <div className="bg-white border-b border-gray-200 px-6 py-3">
 
-                {/* Page Title */}
                 <h1 className="text-[15px] font-semibold text-gray-900">
-                    Add New Course
+                    Add New Lecture
                 </h1>
 
             </div>
-
 
             {/* Main Content */}
             <div className="px-6 py-5">
 
                 <div className="max-w-[720px] mx-auto">
 
-                    {/*  Form  */}
+                    {/* Form Card */}
                     <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+
                         <form
                             onSubmit={handleSubmit}
                             className="p-5 space-y-4"
                         >
 
-                            {/* Course name  */}
+                            {/* Lecture Name */}
                             <div>
 
                                 <label
-                                    htmlFor="name"
+                                    htmlFor="lecName"
                                     className="block text-[10px] font-medium text-gray-700 mb-1.5"
                                 >
-                                    Course Name
+                                    Lecture Name
                                 </label>
 
                                 <input
-                                    id="courseName"
+                                    id="lecName"
                                     type="text"
-                                    value={course.courseName}
+                                    value={lecture.lecName}
                                     onChange={(e) =>
-                                        handleChange(e, "courseName")
+                                        handleChange(
+                                            e,
+                                            "lecName"
+                                        )
                                     }
                                     placeholder="e.g. Introduction to React"
                                     className="
@@ -185,23 +253,26 @@ const AddLecture = () => {
 
                             </div>
 
-                            {/* Level */}
+                            {/* Instructor */}
                             <div>
 
                                 <label
-                                    htmlFor="courseLevel"
+                                    htmlFor="instructor"
                                     className="block text-[10px] font-medium text-gray-700 mb-1.5"
                                 >
-                                    Difficulty Level
+                                    Assign to Instructor
                                 </label>
 
                                 <div className="relative">
 
                                     <select
-                                        id="courseLevel"
-                                        value={course.courseLevel}
+                                        id="instructor"
+                                        value={lecture.instructorId}
                                         onChange={(e) =>
-                                            handleChange(e, "courseLevel")
+                                            handleChange(
+                                                e,
+                                                "instructorId"
+                                            )
                                         }
                                         className="
                                             appearance-none
@@ -224,20 +295,19 @@ const AddLecture = () => {
                                     >
 
                                         <option value="">
-                                            Select level...
+                                            Select Instructor
                                         </option>
 
-                                        <option value="Beginner">
-                                            Beginner
-                                        </option>
-
-                                        <option value="Intermediate">
-                                            Intermediate
-                                        </option>
-
-                                        <option value="Advanced">
-                                            Advanced
-                                        </option>
+                                        {instructor.map(
+                                            (item) => (
+                                                <option
+                                                    key={item._id}
+                                                    value={item._id}
+                                                >
+                                                    {item.name}
+                                                </option>
+                                            )
+                                        )}
 
                                     </select>
 
@@ -257,30 +327,32 @@ const AddLecture = () => {
 
                             </div>
 
-                            {/* Description */}
+                            {/* Batch */}
                             <div>
 
                                 <label
-                                    htmlFor="description"
+                                    htmlFor="batch"
                                     className="block text-[10px] font-medium text-gray-700 mb-1.5"
                                 >
-                                    Description
+                                    Batch
                                 </label>
 
-                                <textarea
-                                    id="description"
-                                    value={course.description}
+                                <input
+                                    id="batch"
+                                    type="text"
+                                    value={lecture.batchName}
                                     onChange={(e) =>
-                                        handleChange(e, "description")
+                                        handleChange(
+                                            e,
+                                            "batchName"
+                                        )
                                     }
-                                    placeholder="Write a short brief about the course objectives, curriculum, and targeted audience."
+                                    placeholder="e.g. Third"
                                     className="
                                         w-full
-                                        h-[70px]
+                                        h-9
                                         px-3
-                                        py-2.5
                                         text-[10px]
-                                        leading-4
                                         text-gray-700
                                         placeholder:text-gray-400
                                         bg-white
@@ -288,7 +360,6 @@ const AddLecture = () => {
                                         border-gray-200
                                         rounded-md
                                         outline-none
-                                        resize-none
                                         focus:border-[#5140d8]
                                         focus:ring-2
                                         focus:ring-[#5140d8]/10
@@ -298,81 +369,64 @@ const AddLecture = () => {
 
                             </div>
 
-                            {/*  Image  */}
+                            {/* Lecture Date */}
                             <div>
 
                                 <label
+                                    htmlFor="date"
                                     className="block text-[10px] font-medium text-gray-700 mb-1.5"
                                 >
-                                    Course Cover Image
+                                    Lecture Date
                                 </label>
 
-                                <label
-                                    htmlFor="courseImage"
+                                <input
+                                    id="date"
+                                    type="datetime-local"
+                                    value={lecture.date}
+                                    onChange={(e) =>
+                                        handleChange(
+                                            e,
+                                            "date"
+                                        )
+                                    }
                                     className="
                                         w-full
-                                        h-[72px]
+                                        h-9
+                                        px-3
+                                        text-[10px]
+                                        text-gray-700
+                                        bg-white
                                         border
-                                        border-dashed
-                                        border-gray-300
+                                        border-gray-200
                                         rounded-md
-                                        bg-[#fafbfc]
-                                        flex
-                                        flex-col
-                                        items-center
-                                        justify-center
-                                        cursor-pointer
-                                        hover:border-[#5140d8]
-                                        hover:bg-[#f8f7ff]
+                                        outline-none
+                                        focus:border-[#5140d8]
+                                        focus:ring-2
+                                        focus:ring-[#5140d8]/10
                                         transition
                                     "
-                                >
-
-                                    <UploadCloud
-                                        size={18}
-                                        strokeWidth={1.7}
-                                        className="text-[#5140d8] mb-1"
-                                    />
-
-                                    <span className="text-[9px] font-medium text-gray-700">
-                                        Click to upload or drag and drop
-                                    </span>
-
-                                    <span className="text-[7px] text-gray-400 mt-0.5">
-                                        SVG, PNG, JPG or GIF (max. 800×400px)
-                                    </span>
-
-                                    <input
-                                        id="courseImage"
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleImageChange}
-                                        className="hidden"
-                                    />
-
-                                </label>
-
-                                {/* Selected image name */}
-                                {course.image && (
-                                    <p className="text-[8px] text-gray-500 mt-1">
-                                        Selected: {course.image.name}
-                                    </p>
-                                )}
+                                />
 
                             </div>
 
                             {/* Error */}
-                            {
-                                error && <p className="text-center text-md text-red-500 font-bold">{error}</p>
-                            }
+                            {error && (
+                                <p className="text-center text-[11px] text-red-500 font-semibold">
+                                    {error}
+                                </p>
+                            )}
 
-                            {/*  Buttons  */}
+                            {/* Buttons */}
                             <div className="flex justify-end items-center gap-2 pt-1">
 
-                                {/* Cancel Button */}
+                                {/* Cancel */}
                                 <button
                                     type="button"
-                                    onClick={() => navigate('/courses')}
+                                    onClick={() =>
+                                        navigate(
+                                            `/courses/${courseId}/lectures`
+                                        )
+                                    }
                                     className="
                                         h-8
                                         px-4
@@ -390,30 +444,31 @@ const AddLecture = () => {
                                     Cancel
                                 </button>
 
-                                {/* Submit Button */}
+                                {/* Submit */}
                                 <button
                                     type="submit"
                                     disabled={loading}
                                     className={`
-                                                h-8
-                                                px-4
-                                                min-w-[85px]
-                                                flex
-                                                items-center
-                                                justify-center
-                                                gap-2
-                                                bg-[#5140d8]
-                                                text-white
-                                                text-[9px]
-                                                font-medium
-                                                rounded-md
-                                                transition
-                                                ${loading
+                                        h-8
+                                        px-4
+                                        min-w-[100px]
+                                        flex
+                                        items-center
+                                        justify-center
+                                        gap-2
+                                        bg-[#5140d8]
+                                        text-white
+                                        text-[9px]
+                                        font-medium
+                                        rounded-md
+                                        transition
+                                        ${loading
                                             ? "opacity-70 cursor-not-allowed"
                                             : "hover:bg-[#4434c5]"
                                         }
-                                        `}
+                                    `}
                                 >
+
                                     {loading ? (
                                         <>
                                             <span
@@ -428,12 +483,14 @@ const AddLecture = () => {
                                                 "
                                             />
 
-                                            Creating...
+                                            "Creating..."
                                         </>
                                     ) : (
-                                        isEditMode ? "Update Course" : "Create Course"
+                                        isEditMode ? "Update Lecture" : "Create Lecture"
                                     )}
+
                                 </button>
+
                             </div>
 
                         </form>

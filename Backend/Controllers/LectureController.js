@@ -88,7 +88,8 @@ export const getAllInstructorLectures = async (req, res) => {
 export const getLectureById = async (req, res) => {
     try {
         // Destructuring
-        const lectureId = req.params.lectureId;
+        const lectureId = req.params.lecId;
+        console.log(lectureId);
 
         // Validation
         if (!lectureId) {
@@ -110,7 +111,7 @@ export const getLectureById = async (req, res) => {
 // Controller to update status of lecture
 export const updateStatusOfLecture = async (req, res) => {
     try {
-        const { lectureId, status } = req.params;
+        const { lecId, status } = req.params;
 
         if (!lectureId || !status) {
             return res.status(400).json({ message: "Lecture ID and status are required" });
@@ -135,7 +136,7 @@ export const updateStatusOfLecture = async (req, res) => {
 // Controller to update lecture
 export const updateLecture = async (req, res) => {
     try {
-        const lectureId = req.params.lectureId;
+        const lectureId = req.params.lecId;
         const { instructorId, lecName, batchName, date } = req.body;
 
         if (!lectureId || !instructorId || !lecName || !batchName || !date) {
