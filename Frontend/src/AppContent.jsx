@@ -8,12 +8,12 @@ import Courses from './Components/Pages/Courses/Courses'
 import AddCourse from './Components/Pages/Courses/AddCourse'
 import Lectures from './Components/Pages/Lectures/Lectures'
 import AddLecture from './Components/Pages/Lectures/AddLecture'
+import Instructors from './Components/Pages/Instructors/Instructors'
 
 const AppContent = () => {
   return (
     <Routes>
       <Route path='/login' element={<Login />} />
-      <Route path='/register' element={<Register />} />
 
       <Route element={<MainLayout />}>
         <Route path='/' element={<Dashboard />} />
@@ -24,6 +24,10 @@ const AppContent = () => {
         <Route path='/courses/:id/lectures' element={<Lectures />} />
         <Route path='/courses/:id/lectures/add-lecture' element={<AddLecture />} />
         <Route path='/courses/:id/lectures/edit-lecture/:lecId' element={<AddLecture />} />
+
+        <Route path='/instructors' element={<Instructors />} />
+        <Route path='/instructors/add-instructor' element={<Register />} />
+
       </Route>
     </Routes>
   )

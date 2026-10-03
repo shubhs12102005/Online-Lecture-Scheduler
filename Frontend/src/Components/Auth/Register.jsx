@@ -68,7 +68,7 @@ const Register = () => {
                 localStorage.setItem("token", res.data.token);
                 localStorage.setItem("user", res.data.user);
 
-                navigate('/');
+                navigate('/instructors');
             }
 
         } catch (error) {
